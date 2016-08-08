@@ -1,4 +1,45 @@
 # depslib dependency file v1.0
-1470365881 source:/home/liuh/workspace/CTPMd/CTPMd/main.cpp
+1470623926 source:/home/liuh/workspace/CTPMd/CTPMd/main.cpp
 	<iostream>
+	"api/ctp/ThostFtdcMdApi.h"
+	"MyCTPMdSpi.cpp"
+	<stdio.h>
+	"api/ctp/ThostFtdcTraderApi.h"
+	"MyCTPTraderSpi.cpp"
+
+1470367096 /home/liuh/workspace/CTPMd/CTPMd/api/ctp/ThostFtdcMdApi.h
+	"ThostFtdcUserApiStruct.h"
+
+1470367096 /home/liuh/workspace/CTPMd/CTPMd/api/ctp/ThostFtdcUserApiStruct.h
+	"ThostFtdcUserApiDataType.h"
+
+1470367096 /home/liuh/workspace/CTPMd/CTPMd/api/ctp/ThostFtdcUserApiDataType.h
+
+1470376506 /home/liuh/workspace/CTPMd/CTPMd/MyCTPMdSpi.cpp
+	<iostream>
+	<string.h>
+	<stdio.h>
+	"MyCTPMdSpi.h"
+	"api/ctp/ThostFtdcMdApi.h"
+
+1470623302 /home/liuh/workspace/CTPMd/CTPMd/MyCTPMdSpi.h
+
+1470367096 /home/liuh/workspace/CTPMd/CTPMd/api/ctp/ThostFtdcTraderApi.h
+	"ThostFtdcUserApiStruct.h"
+
+1470626740 /home/liuh/workspace/CTPMd/CTPMd/MyCTPTraderSpi.cpp
+	<iostream>
+	<string.h>
+	<stdio.h>
+	"MyCTPTraderSpi.h"
+	"api/ctp/ThostFtdcTraderApi.h"
+
+1470625730 /home/liuh/workspace/CTPMd/CTPMd/MyCTPTraderSpi.h
+
+1470622866 source:/home/liuh/workspace/CTPMd/CTPMd/MyCTPTraderSpi.cpp
+	<iostream>
+	<string.h>
+	<stdio.h>
+	"MyCTPTraderSpi.h"
+	"api/ctp/ThostFtdcTraderApi.h"
 
