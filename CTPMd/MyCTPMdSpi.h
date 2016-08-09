@@ -1,10 +1,14 @@
 #ifndef MYCTPMDSPI_H_INCLUDED
 #define MYCTPMDSPI_H_INCLUDED
-
+#include <vector>
+#include <string.h>
+using namespace std;
 class MyCTPMdSpi : public CThostFtdcMdSpi
 {
     public:
         MyCTPMdSpi(CThostFtdcMdApi *pUserApi);
+        MyCTPMdSpi(CThostFtdcMdApi *pUserApi,vector<string> codeList);
+
         ~MyCTPMdSpi();
 	///当客户端与交易后台建立起通信连接时（还未登录前），该方法被调用。
         virtual void OnFrontConnected();
@@ -17,6 +21,7 @@ class MyCTPMdSpi : public CThostFtdcMdSpi
 
     private:
         CThostFtdcMdApi * m_pUserApi;
+        vector<string> m_codeList;
 };
 
 #endif // MYCTPMDSPI_H_INCLUDED

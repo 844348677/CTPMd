@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include "MyCTPTraderSpi.h"
 #include "api/ctp/ThostFtdcTraderApi.h"
+#include<vector>
 
 using namespace std;
 
@@ -32,20 +33,43 @@ void MyCTPTraderSpi::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, 
     cout << "FrontID: " << pRspUserLogin->FrontID << endl;
     cout << "SessionID: " << pRspUserLogin->SessionID << endl;
     cout << "MaxOrderRef: " << pRspUserLogin->MaxOrderRef << endl;
-
+    cout << "TradingDay:" << m_pUserApi->GetTradingDay() << endl;
 
     CThostFtdcQryInstrumentField pQryInstrument;
     memset(&pQryInstrument,0,sizeof(pQryInstrument));
     strcpy(pQryInstrument.ExchangeID,"CFFEX");
-    m_pUserApi->ReqQryInstrument(&pQryInstrument,0);
+    int ret = m_pUserApi->ReqQryInstrument(&pQryInstrument,0);
 
+    cout << "ret: " << ret <<endl;
 }
 
+//int indexN = 0;
+vector<string> codeList;
 void MyCTPTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast){
     cout << "OnRspQryInstrument:" << endl;
     cout << "InstrumentID: " << pInstrument->InstrumentID <<endl;
     cout << "ExchangeID: " << pInstrument->ExchangeID << endl;
-
+    //codeArray[index] =  pInstrument->InstrumentID;
+    //++indexN;
+    codeList.push_back(pInstrument->InstrumentID);
+    //cout << codeList[codeList.size()-1]<< endl;
+    //char * instrument = pInstrument->InstrumentID;
+    //cout << "Instrument:" << instrument << endl;
     cout << endl;
+
+    //以下东西需要提取出去
+    if(codeList.size() == 18){
+        CThostFtdcMdApi* pUserApiMd = CThostFtdcMdApi::CreateFtdcMdApi("./outfile/",true);
+        MyCTPMdSpi sh(pUserApiMd,codeList);
+        pUserApiMd->RegisterSpi(&sh);
+
+        pUserApiMd->RegisterFront("tcp://180.168.146.187:10010");
+        pUserApiMd->Init();
+        pUserApiMd->Join();
+    }
+
+
 }
+
+
 

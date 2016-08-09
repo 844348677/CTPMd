@@ -40,6 +40,17 @@ void testTime(){
      time(&timer);
      tm* t_tm = localtime(&timer);
      cout<<"today is "<<t_tm->tm_year+1900<<" "<<t_tm->tm_mon+1<<" "<<t_tm->tm_mday<<endl;
+
+    vector<string> testArray;
+    testArray.push_back("IF1608");
+    testArray.push_back("IH1608");
+    testArray.push_back("IC1608");
+    char * testCharArray[3];
+    for(int i=0;i<3;i++){
+        testCharArray[i]  = new char[testArray[i].size()+1];
+        strcpy(testCharArray[i],testArray[i].c_str());
+        cout << testCharArray[i] << endl;
+    }
 }
 void testTraderConnect(){
     cout << "testTraderConnect():" << endl;

@@ -14,7 +14,6 @@ class MyCTPTraderSpi : public CThostFtdcTraderSpi
         ///请求查询合约响应
         virtual void OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
 
-
     private:
         CThostFtdcTraderApi * m_pUserApi;
 };

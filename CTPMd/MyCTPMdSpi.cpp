@@ -3,10 +3,14 @@
 #include <stdio.h>
 #include "MyCTPMdSpi.h"
 #include "api/ctp/ThostFtdcMdApi.h"
+#include <vector>
+#include <fstream>
+#include <iomanip>
 
 using namespace std;
 
 MyCTPMdSpi::MyCTPMdSpi(CThostFtdcMdApi *pUserApi):m_pUserApi(pUserApi){}
+MyCTPMdSpi::MyCTPMdSpi(CThostFtdcMdApi *pUserApi,vector<string> codeList):m_pUserApi(pUserApi),m_codeList(codeList){}
 MyCTPMdSpi::~MyCTPMdSpi(){}
 
 void MyCTPMdSpi::OnFrontConnected(){
@@ -32,9 +36,18 @@ void MyCTPMdSpi::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CTho
     }
     cout << "Login success.Begin receiving data" << endl;
 
-
-        char * Instrumnet[] = {"IF1608","IF1609"};
-        m_pUserApi->SubscribeMarketData(Instrumnet,2);
+    for(int i=0;i<m_codeList.size();i++){
+        cout << m_codeList[i] << endl;
+    }
+    char * Instrument[18];
+    for(int i=0;i<18;i++){
+        Instrument[i] = new char[m_codeList.size()+1];
+        strcpy(Instrument[i],m_codeList[i].c_str());
+        cout << Instrument[i] << endl;
+    }
+        //char * Instrumnet[1];
+        //Instrumnet[0] = m_instrument;
+    m_pUserApi->SubscribeMarketData(Instrument,18);
 
 }
 
@@ -53,7 +66,7 @@ void MyCTPMdSpi::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField *pDepthMark
     cout <<"LastPrice最新价:"<<pDepthMarketData->LastPrice<<endl;
     cout <<"PreSettlementPrice上次结算价:"<<pDepthMarketData->PreSettlementPrice<<endl;
     cout <<"Volume数量:"<<pDepthMarketData->Volume<<endl;
-    cout <<"Turnover成交金额:"<<pDepthMarketData->Turnover<<endl;
+    cout <<"Turnover成交金额:"<<setprecision(10)<<pDepthMarketData->Turnover<<endl;
     cout <<"UpdateTime最后修改时间:"<<pDepthMarketData->UpdateTime<<endl;
     cout <<"UpdateMillisec最后修改毫秒:"<<pDepthMarketData->UpdateMillisec<<endl;
     cout <<"BidPrice申买价一:"<<pDepthMarketData->BidPrice1<<endl;
@@ -61,4 +74,63 @@ void MyCTPMdSpi::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField *pDepthMark
     cout <<"AskPrice1申卖价一:"<<pDepthMarketData->AskPrice1<<endl;
     cout <<"AskVolume1申卖量一:"<<pDepthMarketData->AskVolume1<<endl;
     cout << endl;
+
+    //把结果写到文件当中
+    char filename[80] =  "./";
+    strcat(filename,pDepthMarketData->TradingDay);
+    strcat(filename,"/");
+    strcat(filename,pDepthMarketData->InstrumentID);
+    strcat(filename,".txt");
+
+    cout <<"  " << filename << endl;
+    //string filename = "./"+pDepthMarketData->TradingDay+"/"+pDepthMarketData->InstrumentID+".txt";
+    ofstream _file;
+    _file.open(filename,ios::app);
+    _file << pDepthMarketData->TradingDay <<",";
+    _file << pDepthMarketData->InstrumentID <<",";
+    _file << pDepthMarketData->ExchangeID <<",";
+    _file << pDepthMarketData->ExchangeInstID <<",";
+    _file << pDepthMarketData->LastPrice <<",";
+    _file << pDepthMarketData->PreSettlementPrice <<",";
+    _file << pDepthMarketData->PreClosePrice <<",";
+    _file << pDepthMarketData->PreOpenInterest <<",";
+    _file << pDepthMarketData->OpenPrice <<",";
+    _file << pDepthMarketData->HighestPrice <<",";
+    _file << pDepthMarketData->LowestPrice <<",";
+    _file << pDepthMarketData->Volume <<",";
+    _file <<setprecision(10)<< pDepthMarketData->Turnover <<",";
+    _file << pDepthMarketData->OpenInterest <<",";
+    _file << pDepthMarketData->ClosePrice <<",";
+    _file << pDepthMarketData->SettlementPrice <<",";
+    _file << pDepthMarketData->UpperLimitPrice <<",";
+    _file << pDepthMarketData->LowerLimitPrice <<",";
+    _file << pDepthMarketData->PreDelta <<",";
+    _file << pDepthMarketData->CurrDelta <<",";
+    _file << pDepthMarketData->UpdateTime <<",";
+    _file << pDepthMarketData->UpdateMillisec <<",";
+    _file << pDepthMarketData->BidPrice1 <<",";
+    _file << pDepthMarketData->BidVolume1 <<",";
+    _file << pDepthMarketData->AskPrice1 <<",";
+    _file << pDepthMarketData->AskVolume1 <<",";
+    _file << pDepthMarketData->BidPrice2 <<",";
+    _file << pDepthMarketData->BidVolume2 <<",";
+    _file << pDepthMarketData->AskPrice2 <<",";
+    _file << pDepthMarketData->AskVolume2 <<",";
+    _file << pDepthMarketData->BidPrice3 <<",";
+    _file << pDepthMarketData->BidVolume3 <<",";
+    _file << pDepthMarketData->AskPrice3 <<",";
+    _file << pDepthMarketData->AskVolume3 <<",";
+    _file << pDepthMarketData->BidPrice4 <<",";
+    _file << pDepthMarketData->BidVolume4 <<",";
+    _file << pDepthMarketData->AskPrice4 <<",";
+    _file << pDepthMarketData->AskVolume4 <<",";
+    _file << pDepthMarketData->BidPrice5 <<",";
+    _file << pDepthMarketData->BidVolume5 <<",";
+    _file << pDepthMarketData->AskPrice5 <<",";
+    _file << pDepthMarketData->AskVolume5 <<",";
+    _file << pDepthMarketData->AveragePrice <<",";
+    _file << pDepthMarketData->ActionDay <<endl;
+
+    _file.close();
+
 }
