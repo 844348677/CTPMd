@@ -6,6 +6,7 @@
 #include <vector>
 #include <fstream>
 #include <iomanip>
+#define DBL_MAX   1.7976931348623158e+308
 
 using namespace std;
 
@@ -73,6 +74,9 @@ void MyCTPMdSpi::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField *pDepthMark
     cout <<"BidVolume1申买量一:"<<pDepthMarketData->BidVolume1<<endl;
     cout <<"AskPrice1申卖价一:"<<pDepthMarketData->AskPrice1<<endl;
     cout <<"AskVolume1申卖量一:"<<pDepthMarketData->AskVolume1<<endl;
+    cout << "double_max: " <<pDepthMarketData->BidPrice3 << endl;
+    if(pDepthMarketData->BidPrice3 ==  DBL_MAX)
+        cout << "aaaaa " << endl;
     cout << endl;
 
     //把结果写到文件当中
@@ -100,33 +104,75 @@ void MyCTPMdSpi::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField *pDepthMark
     _file << pDepthMarketData->Volume <<",";
     _file <<setprecision(10)<< pDepthMarketData->Turnover <<",";
     _file << pDepthMarketData->OpenInterest <<",";
-    _file << pDepthMarketData->ClosePrice <<",";
-    _file << pDepthMarketData->SettlementPrice <<",";
+    if(pDepthMarketData->ClosePrice == DBL_MAX)
+        _file << ",";
+    else
+        _file << pDepthMarketData->ClosePrice <<",";
+    if(pDepthMarketData->SettlementPrice == DBL_MAX)
+        _file << ",";
+    else
+        _file << pDepthMarketData->SettlementPrice <<",";
     _file << pDepthMarketData->UpperLimitPrice <<",";
     _file << pDepthMarketData->LowerLimitPrice <<",";
-    _file << pDepthMarketData->PreDelta <<",";
-    _file << pDepthMarketData->CurrDelta <<",";
+    if(pDepthMarketData->PreDelta == DBL_MAX)
+        _file << ",";
+    else
+        _file << pDepthMarketData->PreDelta <<",";
+    if(pDepthMarketData->CurrDelta == DBL_MAX)
+        _file << ",";
+    else
+        _file << pDepthMarketData->CurrDelta <<",";
     _file << pDepthMarketData->UpdateTime <<",";
     _file << pDepthMarketData->UpdateMillisec <<",";
-    _file << pDepthMarketData->BidPrice1 <<",";
+    if(pDepthMarketData->BidPrice1 == DBL_MAX)
+        _file << ",";
+    else
+        _file << pDepthMarketData->BidPrice1 <<",";
     _file << pDepthMarketData->BidVolume1 <<",";
-    _file << pDepthMarketData->AskPrice1 <<",";
+    if(pDepthMarketData->AskPrice1 == DBL_MAX)
+        _file << ",";
+    else
+        _file << pDepthMarketData->AskPrice1 <<",";
     _file << pDepthMarketData->AskVolume1 <<",";
-    _file << pDepthMarketData->BidPrice2 <<",";
+    if(pDepthMarketData->BidPrice2 == DBL_MAX)
+        _file << ",";
+    else
+        _file << pDepthMarketData->BidPrice2 <<",";
     _file << pDepthMarketData->BidVolume2 <<",";
-    _file << pDepthMarketData->AskPrice2 <<",";
+    if(pDepthMarketData->AskPrice2 == DBL_MAX)
+        _file << ",";
+    else
+        _file << pDepthMarketData->AskPrice2 <<",";
     _file << pDepthMarketData->AskVolume2 <<",";
-    _file << pDepthMarketData->BidPrice3 <<",";
+    if(pDepthMarketData->BidPrice3 == DBL_MAX)
+        _file << ",";
+    else
+        _file << pDepthMarketData->BidPrice3 <<",";
     _file << pDepthMarketData->BidVolume3 <<",";
-    _file << pDepthMarketData->AskPrice3 <<",";
+    if(pDepthMarketData->AskPrice3 == DBL_MAX)
+        _file << ",";
+    else
+        _file << pDepthMarketData->AskPrice3 <<",";
     _file << pDepthMarketData->AskVolume3 <<",";
-    _file << pDepthMarketData->BidPrice4 <<",";
+    if(pDepthMarketData->BidPrice4 == DBL_MAX)
+        _file << ",";
+    else
+        _file << pDepthMarketData->BidPrice4 <<",";
     _file << pDepthMarketData->BidVolume4 <<",";
-    _file << pDepthMarketData->AskPrice4 <<",";
+    if(pDepthMarketData->AskPrice4 == DBL_MAX)
+        _file << ",";
+     else
+        _file << pDepthMarketData->AskPrice4 <<",";
     _file << pDepthMarketData->AskVolume4 <<",";
-    _file << pDepthMarketData->BidPrice5 <<",";
+    if(pDepthMarketData->BidPrice5 == DBL_MAX)
+        _file << ",";
+    else
+        _file << pDepthMarketData->BidPrice5 <<",";
     _file << pDepthMarketData->BidVolume5 <<",";
-    _file << pDepthMarketData->AskPrice5 <<",";
+    if(pDepthMarketData->AskPrice5 == DBL_MAX)
+        _file << ",";
+    else
+        _file << pDepthMarketData->AskPrice5 <<",";
     _file << pDepthMarketData->AskVolume5 <<",";
     _file << pDepthMarketData->AveragePrice <<",";
     _file << pDepthMarketData->ActionDay <<endl;
