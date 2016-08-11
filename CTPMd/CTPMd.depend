@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1470649337 source:/home/liuh/workspace/CTPMd/CTPMd/main.cpp
+1470827307 source:/home/liuh/workspace/CTPMd/CTPMd/main.cpp
 	<iostream>
 	"api/ctp/ThostFtdcMdApi.h"
 	"MyCTPMdSpi.cpp"
@@ -15,7 +15,7 @@
 
 1470367096 /home/liuh/workspace/CTPMd/CTPMd/api/ctp/ThostFtdcUserApiDataType.h
 
-1470797873 /home/liuh/workspace/CTPMd/CTPMd/MyCTPMdSpi.cpp
+1470818529 /home/liuh/workspace/CTPMd/CTPMd/MyCTPMdSpi.cpp
 	<iostream>
 	<string.h>
 	<stdio.h>

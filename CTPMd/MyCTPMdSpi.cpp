@@ -102,7 +102,7 @@ void MyCTPMdSpi::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField *pDepthMark
     _file << pDepthMarketData->HighestPrice <<",";
     _file << pDepthMarketData->LowestPrice <<",";
     _file << pDepthMarketData->Volume <<",";
-    _file <<setprecision(10)<< pDepthMarketData->Turnover <<",";
+    _file <<setprecision(15)<< pDepthMarketData->Turnover <<",";
     _file << pDepthMarketData->OpenInterest <<",";
     if(pDepthMarketData->ClosePrice == DBL_MAX)
         _file << ",";
