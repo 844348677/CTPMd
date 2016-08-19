@@ -63,7 +63,8 @@ void MyCTPTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, 
         MyCTPMdSpi sh(pUserApiMd,codeList);
         pUserApiMd->RegisterSpi(&sh);
 
-        pUserApiMd->RegisterFront("tcp://180.168.146.187:10010");
+        pUserApiMd->RegisterFront("tcp://180.166.11.33:41213");
+        //pUserApiMd->RegisterFront("tcp://180.168.146.187:10010");
         pUserApiMd->Init();
         pUserApiMd->Join();
     }

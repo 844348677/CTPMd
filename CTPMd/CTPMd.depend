@@ -15,7 +15,7 @@
 
 1470367096 /home/liuh/workspace/CTPMd/CTPMd/api/ctp/ThostFtdcUserApiDataType.h
 
-1470818529 /home/liuh/workspace/CTPMd/CTPMd/MyCTPMdSpi.cpp
+1471433567 /home/liuh/workspace/CTPMd/CTPMd/MyCTPMdSpi.cpp
 	<iostream>
 	<string.h>
 	<stdio.h>
@@ -32,7 +32,7 @@
 1470367096 /home/liuh/workspace/CTPMd/CTPMd/api/ctp/ThostFtdcTraderApi.h
 	"ThostFtdcUserApiStruct.h"
 
-1470647216 /home/liuh/workspace/CTPMd/CTPMd/MyCTPTraderSpi.cpp
+1471431815 /home/liuh/workspace/CTPMd/CTPMd/MyCTPTraderSpi.cpp
 	<iostream>
 	<string.h>
 	<stdio.h>

@@ -20,9 +20,9 @@ void MyCTPMdSpi::OnFrontConnected(){
     //请求登陆
     CThostFtdcReqUserLoginField reqUserLogin;
     memset(&reqUserLogin,0,sizeof(reqUserLogin));
-    strcpy(reqUserLogin.BrokerID,"9999");
-    strcpy(reqUserLogin.UserID,"065801");
-    strcpy(reqUserLogin.Password,"123456");
+    strcpy(reqUserLogin.BrokerID,"4200");
+    strcpy(reqUserLogin.UserID,"68801979");
+    strcpy(reqUserLogin.Password,"171436");
     int ret = m_pUserApi->ReqUserLogin(&reqUserLogin,0);
 
 }
