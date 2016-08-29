@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include "MyCTPTraderSpi.h"
 #include "api/ctp/ThostFtdcTraderApi.h"
+#include "api/ctp/ThostFtdcMdApi.h"
+#include "MyCTPMdSpi.h"
 #include<vector>
 
 using namespace std;

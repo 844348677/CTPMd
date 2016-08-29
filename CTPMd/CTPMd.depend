@@ -1,21 +1,25 @@
 # depslib dependency file v1.0
-1470827307 source:/home/liuh/workspace/CTPMd/CTPMd/main.cpp
-	<iostream>
+1472180597 source:/home/liuh/workspace/CTPMd/CTPMd/main.cpp
 	"api/ctp/ThostFtdcMdApi.h"
-	"MyCTPMdSpi.cpp"
-	<stdio.h>
 	"api/ctp/ThostFtdcTraderApi.h"
-	"MyCTPTraderSpi.cpp"
+	"MyCTPMdSpi.h"
+	"MyCTPTraderSpi.h"
+	<stdio.h>
+	<iostream>
+	<fstream>
+	<cstring>
+	<iomanip>
+	<thread>
 
-1470367096 /home/liuh/workspace/CTPMd/CTPMd/api/ctp/ThostFtdcMdApi.h
+1471573068 /home/liuh/workspace/CTPMd/CTPMd/api/ctp/ThostFtdcMdApi.h
 	"ThostFtdcUserApiStruct.h"
 
-1470367096 /home/liuh/workspace/CTPMd/CTPMd/api/ctp/ThostFtdcUserApiStruct.h
+1471573067 /home/liuh/workspace/CTPMd/CTPMd/api/ctp/ThostFtdcUserApiStruct.h
 	"ThostFtdcUserApiDataType.h"
 
-1470367096 /home/liuh/workspace/CTPMd/CTPMd/api/ctp/ThostFtdcUserApiDataType.h
+1471573068 /home/liuh/workspace/CTPMd/CTPMd/api/ctp/ThostFtdcUserApiDataType.h
 
-1471433567 /home/liuh/workspace/CTPMd/CTPMd/MyCTPMdSpi.cpp
+1472178176 /home/liuh/workspace/CTPMd/CTPMd/MyCTPMdSpi.cpp
 	<iostream>
 	<string.h>
 	<stdio.h>
@@ -24,28 +28,50 @@
 	<vector>
 	<fstream>
 	<iomanip>
+	<thread>
 
-1470647183 /home/liuh/workspace/CTPMd/CTPMd/MyCTPMdSpi.h
+1472183718 /home/liuh/workspace/CTPMd/CTPMd/MyCTPMdSpi.h
 	<vector>
-	<string.h>
+	<string>
+	"api/ctp/ThostFtdcMdApi.h"
 
-1470367096 /home/liuh/workspace/CTPMd/CTPMd/api/ctp/ThostFtdcTraderApi.h
+1471573067 /home/liuh/workspace/CTPMd/CTPMd/api/ctp/ThostFtdcTraderApi.h
 	"ThostFtdcUserApiStruct.h"
 
-1471431815 /home/liuh/workspace/CTPMd/CTPMd/MyCTPTraderSpi.cpp
+1472178303 /home/liuh/workspace/CTPMd/CTPMd/MyCTPTraderSpi.cpp
 	<iostream>
 	<string.h>
 	<stdio.h>
 	"MyCTPTraderSpi.h"
 	"api/ctp/ThostFtdcTraderApi.h"
+	"api/ctp/ThostFtdcMdApi.h"
 	<vector>
 
-1470638929 /home/liuh/workspace/CTPMd/CTPMd/MyCTPTraderSpi.h
+1472178088 /home/liuh/workspace/CTPMd/CTPMd/MyCTPTraderSpi.h
+	"api/ctp/ThostFtdcTraderApi.h"
 
-1470622866 source:/home/liuh/workspace/CTPMd/CTPMd/MyCTPTraderSpi.cpp
+1472183728 source:/home/liuh/workspace/CTPMd/CTPMd/MyCTPTraderSpi.cpp
 	<iostream>
 	<string.h>
 	<stdio.h>
 	"MyCTPTraderSpi.h"
 	"api/ctp/ThostFtdcTraderApi.h"
+	"api/ctp/ThostFtdcMdApi.h"
+	"MyCTPMdSpi.h"
+	<vector>
+
+1471930307 source:/home/liuh/workspace/CTPMd/CTPMd/threadmodel.cpp
+	<iostream>
+	<thread>
+
+1472192490 source:/home/liuh/workspace/CTPMd/CTPMd/MyCTPMdSpi.cpp
+	"api/ctp/ThostFtdcMdApi.h"
+	<iostream>
+	<string.h>
+	<stdio.h>
+	"MyCTPMdSpi.h"
+	<vector>
+	<fstream>
+	<iomanip>
+	<thread>
 

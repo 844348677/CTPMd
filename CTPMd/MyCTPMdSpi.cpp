@@ -1,33 +1,35 @@
+#include "api/ctp/ThostFtdcMdApi.h"
 #include <iostream>
 #include <string.h>
 #include <stdio.h>
 #include "MyCTPMdSpi.h"
-#include "api/ctp/ThostFtdcMdApi.h"
 #include <vector>
 #include <fstream>
 #include <iomanip>
+#include <thread>
 #define DBL_MAX   1.7976931348623158e+308
 
 using namespace std;
+
+vector<CThostFtdcDepthMarketDataField> m_dataList;
 
 MyCTPMdSpi::MyCTPMdSpi(CThostFtdcMdApi *pUserApi):m_pUserApi(pUserApi){}
 MyCTPMdSpi::MyCTPMdSpi(CThostFtdcMdApi *pUserApi,vector<string> codeList):m_pUserApi(pUserApi),m_codeList(codeList){}
 MyCTPMdSpi::~MyCTPMdSpi(){}
 
 void MyCTPMdSpi::OnFrontConnected(){
-    cout << "OnFrontConnected:" << endl;
-
     //请求登陆
     CThostFtdcReqUserLoginField reqUserLogin;
     memset(&reqUserLogin,0,sizeof(reqUserLogin));
     strcpy(reqUserLogin.BrokerID,"4200");
-    strcpy(reqUserLogin.UserID,"68801979");
-    strcpy(reqUserLogin.Password,"171436");
+    strcpy(reqUserLogin.UserID,"");
+    strcpy(reqUserLogin.Password,"");
+    cout << "kaka" << endl;
     int ret = m_pUserApi->ReqUserLogin(&reqUserLogin,0);
-
 }
 
 void MyCTPMdSpi::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast){
+
     cout << "OnRspUserLogin:"<< endl;
     cout << "ErrorCode= " << pRspInfo->ErrorID << " ,ErrorMsg= " << pRspInfo->ErrorMsg << endl;
     cout << "RequestID= " <<nRequestID << " ,Chain= " <<bIsLast << endl;
@@ -49,7 +51,6 @@ void MyCTPMdSpi::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CTho
         //char * Instrumnet[1];
         //Instrumnet[0] = m_instrument;
     m_pUserApi->SubscribeMarketData(Instrument,18);
-
 }
 
 void MyCTPMdSpi::OnRspSubMarketData(CThostFtdcSpecificInstrumentField *pSpecificInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast){
@@ -58,6 +59,7 @@ void MyCTPMdSpi::OnRspSubMarketData(CThostFtdcSpecificInstrumentField *pSpecific
 }
 
 void MyCTPMdSpi::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField *pDepthMarketData){
+
     cout << "OnRtnDepthMarketData:" << endl;
 
     cout <<"TradingDay交易日:"<< pDepthMarketData->TradingDay<< endl;
@@ -75,6 +77,12 @@ void MyCTPMdSpi::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField *pDepthMark
     cout <<"AskPrice1申卖价一:"<<pDepthMarketData->AskPrice1<<endl;
     cout <<"AskVolume1申卖量一:"<<pDepthMarketData->AskVolume1<<endl;
     cout << "double_max: " <<pDepthMarketData->BidPrice3 << endl;
+
+    //全部写入到内存中，之后写到文件中
+    m_dataList.push_back(*pDepthMarketData);
+    //cout << m_dataList.size() << endl;
+    /*
+    以下写入到文件中的程序，需要写到新的线程中
     if(pDepthMarketData->BidPrice3 ==  DBL_MAX)
         cout << "aaaaa " << endl;
     cout << endl;
@@ -178,5 +186,5 @@ void MyCTPMdSpi::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField *pDepthMark
     _file << pDepthMarketData->ActionDay <<endl;
 
     _file.close();
-
+    */
 }

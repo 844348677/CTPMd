@@ -1,9 +1,11 @@
+#pragma once
 #ifndef MYCTPTRADERSPI_H_INCLUDED
 #define MYCTPTRADERSPI_H_INCLUDED
-
+#include "api/ctp/ThostFtdcTraderApi.h"
 class MyCTPTraderSpi : public CThostFtdcTraderSpi
 {
     public:
+
         MyCTPTraderSpi(CThostFtdcTraderApi *pUserApi);
         ~MyCTPTraderSpi();
 
