@@ -8,19 +8,123 @@
 #include <cstring>
 #include <iomanip>
 #include <thread>
+#include <unistd.h>
 #define DBL_MAX   1.7976931348623158e+308
-
+#include <sys/stat.h> 　
+#include <sys/types.h> 　
+#include <dirent.h>
 using namespace std;
 
-extern vector<CThostFtdcDepthMarketDataField> m_dataList;
+//非测试  ！
+char * front_ip_trader = "tcp://114.80.104.121:41205";
+char * front_ip_md = "tcp://114.80.104.121:41213";
+char * broker_id = "8000";
+char * user_id = "162057";
+char * p_w = "133559";
 
-void testConnect();
-void testConnectSQL();
-void testTime();
-void testTraderConnect();
+char * exchangeID = "SHFE"; //设置需要下载数据的市场，查询该市场的多有合约号。 CFFEX   SHFE   DCE   CZCE
 
+extern vector<CThostFtdcDepthMarketDataField> dataList; //数据
+extern vector<string> codeList; //合约
+
+void searchCodelist();
+void reciveData();
+void writeDataHalfDay();
+int IsFolderExist(const char* path);
+void mkdir(char * path);
+void saveDataToFile(vector<CThostFtdcDepthMarketDataField> & dataList);
+
+int main()
+{
+    cout << "ctp recieve data and save data into file. " << endl;
+
+    thread t1(searchCodelist);
+    thread t2(writeDataHalfDay);
+    thread t3(reciveData);
+    t1.join();
+    t2.join();
+    t3.join();
+
+    return 0;
+}
+
+void searchCodelist(){
+    cout <<"(线程用来查询对应市场的所有合约号)searchCodelist!!!!!!!: " << endl;
+
+    CThostFtdcTraderApi *pUserApi = CThostFtdcTraderApi::CreateFtdcTraderApi("./outfile3/");
+    MyCTPTraderSpi sh(pUserApi);
+    pUserApi->RegisterSpi(&sh);
+
+    pUserApi->RegisterFront(front_ip_trader);
+    pUserApi->Init();
+    sleep(2);
+    sh.ReqUserLogin(broker_id,user_id,p_w);
+    sleep(2);
+    sh.qryCode(exchangeID);
+    sleep(2);
+
+}
+void reciveData(){
+    cout << "(线程用来订阅合约号接受数据)reciveData!!!!!!!: "<< endl;
+
+    CThostFtdcMdApi* pUserApiMd = CThostFtdcMdApi::CreateFtdcMdApi("./outfile/",true);
+    MyCTPMdSpi sh(pUserApiMd);
+    pUserApiMd->RegisterSpi(&sh);
+
+    pUserApiMd->RegisterFront(front_ip_md);
+
+    pUserApiMd->Init();
+    sleep(2);
+    sh.ReqUserLogin(broker_id,user_id,p_w);
+    sleep(20);
+    sh.dataRecive();
+    sleep(10);
+
+    pUserApiMd->Join();
+}
+void writeDataHalfDay(){
+    cout << "(线程用来把内存中的数据写到文件中)writeDataHalfDay!!!!!!!: " << endl;
+
+    while(true){
+        time_t timer;
+        time(&timer);
+        tm* t_tm = localtime(&timer);
+
+        if(t_tm->tm_hour == 12 || t_tm->tm_hour == 16){
+            if(t_tm->tm_min == 0){
+
+                saveDataToFile(dataList);
+                dataList.clear();
+                cout << "数据存储完毕，全部清空。dataList.size(): " << dataList.size() << endl;
+                cout << t_tm->tm_hour<<":"<< t_tm->tm_min<<":"<<t_tm->tm_sec<<"   " <<dataList.size()  << endl;
+            }
+         }
+        sleep(1*60); //每隔一分钟执行一次查询时间操作，在12点和16点时候保存数据，不知道会不会跳过这个时间段，没有执行程序
+    }
+}
+int IsFolderExist(const char* path){
+    DIR *dp;
+    if ((dp = opendir(path)) == NULL){
+        return 0; //不存在该文件夹为0
+    }
+    closedir(dp);
+    return -1; //存在该文件夹为1
+}
+void mkdir(char * path){
+    //char * path = "./20161032/";
+    if(IsFolderExist(path) == 0){   //不存在该文件夹则创建该文件夹
+        int isCreate = mkdir(path,S_IRUSR | S_IWUSR | S_IXUSR | S_IRWXG | S_IRWXO);
+        if( !isCreate )
+        printf("create path: %s\n",path);
+        else
+        printf("create path failed! error code : %s \n",isCreate,path);
+    }
+}
+//把数据存到文件中，存两份，一份为程序目录 日期.txt，另一份 ./日期/合约.txt
 void saveDataToFile(vector<CThostFtdcDepthMarketDataField> & dataList){
-    cout << dataList.size()<< endl;
+    cout <<"dataList.size(): " << dataList.size()<< endl;
+    if(dataList.size() != 0)
+        mkdir(dataList[0].TradingDay);
     for(int i=0;i<dataList.size();++i){
         CThostFtdcDepthMarketDataField pDepthMarketData = dataList[i];
 
@@ -33,8 +137,7 @@ void saveDataToFile(vector<CThostFtdcDepthMarketDataField> & dataList){
         char filename2[80] = "./";
         strcat(filename2,pDepthMarketData.TradingDay);
         strcat(filename2,".txt");
-        cout <<"  " << filename <<"  " << filename2 << endl;
-        //string filename = "./"+pDepthMarketData->TradingDay+"/"+pDepthMarketData->InstrumentID+".txt";
+
         ofstream _file;
         ofstream _file2;
         _file.open(filename,ios::app);
@@ -219,88 +322,3 @@ void saveDataToFile(vector<CThostFtdcDepthMarketDataField> & dataList){
     }
 }
 
-void writeDataHalfDay(){
-/*
-tm_sec	int	seconds after the minute	0-61*
-tm_min	int	minutes after the hour	0-59
-tm_hour	int	hours since midnight	0-23
-tm_mday	int	day of the month	1-31
-tm_mon	int	months since January	0-11
-tm_year	int	years since 1900
-tm_wday	int	days since Sunday	0-6
-tm_yday	int	days since January 1	0-365
-tm_isdst	int	Daylight Saving Time flag
-*/
-    int uniqueSec=100;//用来判断，执行的基本单元为1秒
-    while(true){
-         time_t timer;
-         time(&timer);
-         tm* t_tm = localtime(&timer);
-
-         if(t_tm->tm_hour == 12 || t_tm->tm_hour == 16){
-            if(t_tm->tm_min == 0){
-                if(uniqueSec != t_tm->tm_sec){
-                    if(t_tm->tm_sec == 30){ //在12:00:30和4:00:30秒的时候写数据，之后清空dataList
-                        saveDataToFile(m_dataList);
-                        m_dataList.clear();
-                        cout << "数据存储完毕，全部清空。 " << m_dataList.size() << endl;
-                    }
-                    uniqueSec = t_tm->tm_sec;
-                    //cout << t_tm->tm_hour<<":"<< t_tm->tm_min<<":"<<t_tm->tm_sec<<"   " <<m_dataList.size()  << endl;
-                }
-            }
-         }
-    }
-}
-
-int main()
-{
-    cout << "Hello world1!" << endl;
-
-    thread t1(testTraderConnect);
-    thread t2(writeDataHalfDay);
-    t1.join();
-    t2.join();
-    return 0;
-}
-void testConnect(){
-    cout << "testConnect():" << endl;
-    CThostFtdcMdApi* pUserApi = CThostFtdcMdApi::CreateFtdcMdApi("./outfile/",true);
-    MyCTPMdSpi sh(pUserApi);
-    pUserApi->RegisterSpi(&sh);
-
-    pUserApi->RegisterFront("tcp://180.168.146.187:10010");
-    pUserApi->Init();
-    pUserApi->Join();
-}
-void testConnectSQL(){
-    cout << "testConnectSQL:" << endl;
-}
-void testTime(){
-     time_t timer;
-     time(&timer);
-     tm* t_tm = localtime(&timer);
-     cout<<"today is "<<t_tm->tm_year+1900<<" "<<t_tm->tm_mon+1<<" "<<t_tm->tm_mday<<endl;
-
-    vector<string> testArray;
-    testArray.push_back("IF1608");
-    testArray.push_back("IH1608");
-    testArray.push_back("IC1608");
-    char * testCharArray[3];
-    for(int i=0;i<3;i++){
-        testCharArray[i]  = new char[testArray[i].size()+1];
-        strcpy(testCharArray[i],testArray[i].c_str());
-        cout << testCharArray[i] << endl;
-    }
-}
-void testTraderConnect(){
-    cout << "testTraderConnect():" << endl;
-    CThostFtdcTraderApi *pUserApi = CThostFtdcTraderApi::CreateFtdcTraderApi("./outfile2/");
-
-    MyCTPTraderSpi sh(pUserApi);
-    pUserApi->RegisterSpi(&sh);
-
-    pUserApi->RegisterFront("tcp://180.168.146.187:10000");
-    pUserApi->Init();
-    pUserApi->Join();
-}

@@ -7,60 +7,90 @@
 #include <fstream>
 #include <iomanip>
 #include <thread>
+#include <unistd.h>
 #define DBL_MAX   1.7976931348623158e+308
 
 using namespace std;
 
-vector<CThostFtdcDepthMarketDataField> m_dataList;
+vector<CThostFtdcDepthMarketDataField> dataList;
+extern vector<string> codeList;
 
 MyCTPMdSpi::MyCTPMdSpi(CThostFtdcMdApi *pUserApi):m_pUserApi(pUserApi){}
-MyCTPMdSpi::MyCTPMdSpi(CThostFtdcMdApi *pUserApi,vector<string> codeList):m_pUserApi(pUserApi),m_codeList(codeList){}
+//MyCTPMdSpi::MyCTPMdSpi(CThostFtdcMdApi *pUserApi,vector<string> codeList):m_pUserApi(pUserApi),m_codeList(codeList){}
 MyCTPMdSpi::~MyCTPMdSpi(){}
 
-void MyCTPMdSpi::OnFrontConnected(){
-    //请求登陆
+//用户登陆 需要输入 brokerid userid pw 由外界的函数调用触发。
+void MyCTPMdSpi::ReqUserLogin(char *broker_id, char *user_id, char *p_w){
+    cout << endl;
+    cout << "MD ###ReqUserLogin###: "<< endl;
     CThostFtdcReqUserLoginField reqUserLogin;
     memset(&reqUserLogin,0,sizeof(reqUserLogin));
-    strcpy(reqUserLogin.BrokerID,"4200");
-    strcpy(reqUserLogin.UserID,"");
-    strcpy(reqUserLogin.Password,"");
-    cout << "kaka" << endl;
+    strcpy(reqUserLogin.BrokerID,broker_id);
+    strcpy(reqUserLogin.UserID,user_id);
+    strcpy(reqUserLogin.Password,p_w);
+    //sleep(10); //unistd.h
     int ret = m_pUserApi->ReqUserLogin(&reqUserLogin,0);
+    cout << endl;
+}
+
+void MyCTPMdSpi::OnFrontConnected(){
+    cout << endl;
+    cout << "MD ###OnFrontConnected###: " << endl;
+    cout << endl;
 }
 
 void MyCTPMdSpi::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast){
-
-    cout << "OnRspUserLogin:"<< endl;
-    cout << "ErrorCode= " << pRspInfo->ErrorID << " ,ErrorMsg= " << pRspInfo->ErrorMsg << endl;
-    cout << "RequestID= " <<nRequestID << " ,Chain= " <<bIsLast << endl;
-    if(pRspInfo->ErrorID != 0){
-        cout << "Faileed to login,errorcode= " << pRspInfo->ErrorID << " ,errormsg= " <<pRspInfo->ErrorMsg << " requestid= " << nRequestID
-        << " ,chian= " << bIsLast << endl;
+    //登陆的回调函数，打印一些没有用的信息
+    cout << "MD ###OnRspUserLogin###:" << endl;
+    cout << "ErrorCode=" << pRspInfo->ErrorID  << " , RequestID=" << nRequestID << " , Chain=" << bIsLast  << endl;  //<< " ,ErrorMsg= " <<pRspInfo->ErrorMsg << endl;
+    cout << "FrontID=" << pRspUserLogin->FrontID << " , SessionID=" << pRspUserLogin->SessionID << " , MaxOrderRef="<< pRspUserLogin->MaxOrderRef << " , TradingDay="<< m_pUserApi->GetTradingDay() << endl;
+    if(pRspInfo->ErrorID != 0){ //登陆错误的时候打印信息。
+        cout << "Failed to login,errorcode= " << pRspInfo->ErrorID << " ,errormsg= " << pRspInfo->ErrorMsg << " requestid " << nRequestID
+        << " ,chain= " << bIsLast << endl;
     }
-    cout << "Login success.Begin receiving data" << endl;
+    cout << endl;
+}
 
+void MyCTPMdSpi::dataRecive(){
+    cout << endl;
+    cout << "MD ###dataRecive###: " << endl;
+    char * Instrument[codeList.size()];
+    for(int i=0;i<codeList.size();i++){
+        Instrument[i] = new char[codeList.size()+1];
+        strcpy(Instrument[i],codeList[i].c_str());
+        cout <<"SubscribeMarketData: "<< Instrument[i] << endl;
+    }
+    m_codeList = codeList;
+    m_pUserApi->SubscribeMarketData(Instrument,codeList.size());  //订阅行情，每一个合约调用一次OnRspSubMarketData，之后的数据在OnRtnDepthMarketData方法中返回
+    cout << endl;
+}
+void MyCTPMdSpi::dataStop(){
+    cout << endl;
+    cout << "MD ###dataStop###: " << endl;
+    char * Instrument[m_codeList.size()];
     for(int i=0;i<m_codeList.size();i++){
-        cout << m_codeList[i] << endl;
-    }
-    char * Instrument[18];
-    for(int i=0;i<18;i++){
         Instrument[i] = new char[m_codeList.size()+1];
         strcpy(Instrument[i],m_codeList[i].c_str());
-        cout << Instrument[i] << endl;
+        cout << "UnSubscribeMarketData: " << Instrument[i] << endl;
     }
-        //char * Instrumnet[1];
-        //Instrumnet[0] = m_instrument;
-    m_pUserApi->SubscribeMarketData(Instrument,18);
+    m_pUserApi->UnSubscribeMarketData(Instrument,m_codeList.size());
+    cout << endl;
 }
 
 void MyCTPMdSpi::OnRspSubMarketData(CThostFtdcSpecificInstrumentField *pSpecificInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast){
-    cout << "OnRspSubMarketData:" << endl;
-
+    cout << endl;
+    cout << "MD ###OnRspSubMarketData###: " << endl;
+    cout << endl;
 }
+void MyCTPMdSpi::OnRspUnSubMarketData(CThostFtdcSpecificInstrumentField *pSpecificInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) {
+        cout << endl;
+    cout << "MD ###OnRspUnSubMarketData###: " << endl;
+    cout << endl;
+};
 
 void MyCTPMdSpi::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField *pDepthMarketData){
-
-    cout << "OnRtnDepthMarketData:" << endl;
+/*
+    cout << "MD ###OnRtnDepthMarketData###: " << endl;
 
     cout <<"TradingDay交易日:"<< pDepthMarketData->TradingDay<< endl;
     cout <<"InstrumentID合约代码:"<<pDepthMarketData->InstrumentID<<endl;
@@ -77,114 +107,7 @@ void MyCTPMdSpi::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField *pDepthMark
     cout <<"AskPrice1申卖价一:"<<pDepthMarketData->AskPrice1<<endl;
     cout <<"AskVolume1申卖量一:"<<pDepthMarketData->AskVolume1<<endl;
     cout << "double_max: " <<pDepthMarketData->BidPrice3 << endl;
-
+*/
     //全部写入到内存中，之后写到文件中
-    m_dataList.push_back(*pDepthMarketData);
-    //cout << m_dataList.size() << endl;
-    /*
-    以下写入到文件中的程序，需要写到新的线程中
-    if(pDepthMarketData->BidPrice3 ==  DBL_MAX)
-        cout << "aaaaa " << endl;
-    cout << endl;
-
-    //把结果写到文件当中
-    char filename[80] =  "./";
-    strcat(filename,pDepthMarketData->TradingDay);
-    strcat(filename,"/");
-    strcat(filename,pDepthMarketData->InstrumentID);
-    strcat(filename,".txt");
-
-    cout <<"  " << filename << endl;
-    //string filename = "./"+pDepthMarketData->TradingDay+"/"+pDepthMarketData->InstrumentID+".txt";
-    ofstream _file;
-    _file.open(filename,ios::app);
-    _file << pDepthMarketData->TradingDay <<",";
-    _file << pDepthMarketData->InstrumentID <<",";
-    _file << pDepthMarketData->ExchangeID <<",";
-    _file << pDepthMarketData->ExchangeInstID <<",";
-    _file << pDepthMarketData->LastPrice <<",";
-    _file << pDepthMarketData->PreSettlementPrice <<",";
-    _file << pDepthMarketData->PreClosePrice <<",";
-    _file << pDepthMarketData->PreOpenInterest <<",";
-    _file << pDepthMarketData->OpenPrice <<",";
-    _file << pDepthMarketData->HighestPrice <<",";
-    _file << pDepthMarketData->LowestPrice <<",";
-    _file << pDepthMarketData->Volume <<",";
-    _file <<setprecision(15)<< pDepthMarketData->Turnover <<",";
-    _file << pDepthMarketData->OpenInterest <<",";
-    if(pDepthMarketData->ClosePrice == DBL_MAX)
-        _file << ",";
-    else
-        _file << pDepthMarketData->ClosePrice <<",";
-    if(pDepthMarketData->SettlementPrice == DBL_MAX)
-        _file << ",";
-    else
-        _file << pDepthMarketData->SettlementPrice <<",";
-    _file << pDepthMarketData->UpperLimitPrice <<",";
-    _file << pDepthMarketData->LowerLimitPrice <<",";
-    if(pDepthMarketData->PreDelta == DBL_MAX)
-        _file << ",";
-    else
-        _file << pDepthMarketData->PreDelta <<",";
-    if(pDepthMarketData->CurrDelta == DBL_MAX)
-        _file << ",";
-    else
-        _file << pDepthMarketData->CurrDelta <<",";
-    _file << pDepthMarketData->UpdateTime <<",";
-    _file << pDepthMarketData->UpdateMillisec <<",";
-    if(pDepthMarketData->BidPrice1 == DBL_MAX)
-        _file << ",";
-    else
-        _file << pDepthMarketData->BidPrice1 <<",";
-    _file << pDepthMarketData->BidVolume1 <<",";
-    if(pDepthMarketData->AskPrice1 == DBL_MAX)
-        _file << ",";
-    else
-        _file << pDepthMarketData->AskPrice1 <<",";
-    _file << pDepthMarketData->AskVolume1 <<",";
-    if(pDepthMarketData->BidPrice2 == DBL_MAX)
-        _file << ",";
-    else
-        _file << pDepthMarketData->BidPrice2 <<",";
-    _file << pDepthMarketData->BidVolume2 <<",";
-    if(pDepthMarketData->AskPrice2 == DBL_MAX)
-        _file << ",";
-    else
-        _file << pDepthMarketData->AskPrice2 <<",";
-    _file << pDepthMarketData->AskVolume2 <<",";
-    if(pDepthMarketData->BidPrice3 == DBL_MAX)
-        _file << ",";
-    else
-        _file << pDepthMarketData->BidPrice3 <<",";
-    _file << pDepthMarketData->BidVolume3 <<",";
-    if(pDepthMarketData->AskPrice3 == DBL_MAX)
-        _file << ",";
-    else
-        _file << pDepthMarketData->AskPrice3 <<",";
-    _file << pDepthMarketData->AskVolume3 <<",";
-    if(pDepthMarketData->BidPrice4 == DBL_MAX)
-        _file << ",";
-    else
-        _file << pDepthMarketData->BidPrice4 <<",";
-    _file << pDepthMarketData->BidVolume4 <<",";
-    if(pDepthMarketData->AskPrice4 == DBL_MAX)
-        _file << ",";
-     else
-        _file << pDepthMarketData->AskPrice4 <<",";
-    _file << pDepthMarketData->AskVolume4 <<",";
-    if(pDepthMarketData->BidPrice5 == DBL_MAX)
-        _file << ",";
-    else
-        _file << pDepthMarketData->BidPrice5 <<",";
-    _file << pDepthMarketData->BidVolume5 <<",";
-    if(pDepthMarketData->AskPrice5 == DBL_MAX)
-        _file << ",";
-    else
-        _file << pDepthMarketData->AskPrice5 <<",";
-    _file << pDepthMarketData->AskVolume5 <<",";
-    _file << pDepthMarketData->AveragePrice <<",";
-    _file << pDepthMarketData->ActionDay <<endl;
-
-    _file.close();
-    */
+    dataList.push_back(*pDepthMarketData);
 }

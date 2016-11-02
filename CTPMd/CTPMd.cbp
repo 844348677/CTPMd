@@ -12,6 +12,7 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
+					<Add option="-std=c++11" />
 					<Add option="-g" />
 				</Compiler>
 				<Linker>
@@ -36,15 +37,11 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
-		<Unit filename="MyCTPMdSpi.cpp">
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
+		<Unit filename="MyCTPMdSpi.cpp" />
 		<Unit filename="MyCTPMdSpi.h">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
-		<Unit filename="MyCTPTraderSpi.cpp">
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
+		<Unit filename="MyCTPTraderSpi.cpp" />
 		<Unit filename="MyCTPTraderSpi.h">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
